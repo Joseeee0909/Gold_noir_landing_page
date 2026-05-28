@@ -29,7 +29,7 @@
       "inspiration": "Una fragancia vibrante para destacar con elegancia.",
       "image": "",
       "category": "Femenino",
-      "createdAt": "2026-05-28T20:36:12.911Z"
+      "createdAt": "2026-05-28T20:52:27.943Z"
     },
     {
       "id": "goldnoir-voyage",
@@ -43,7 +43,7 @@
       "inspiration": "Fresco, limpio y versátil para todos los días.",
       "image": "",
       "category": "Masculino",
-      "createdAt": "2026-05-28T20:36:12.911Z"
+      "createdAt": "2026-05-28T20:52:27.944Z"
     },
     {
       "id": "goldnoir-black-opium",
@@ -57,7 +57,7 @@
       "inspiration": "Un perfil intenso y seductor para noches especiales.",
       "image": "",
       "category": "Femenino",
-      "createdAt": "2026-05-28T20:36:12.911Z"
+      "createdAt": "2026-05-28T20:52:27.944Z"
     }
   ],
   "orders": [],
@@ -65,34 +65,14 @@
   "quizResponses": [],
   "events": [
     {
-      "id": "1fcac007-1fac-4172-91bf-0ab211173521",
+      "id": "6de10b79-6550-47e5-9282-fd022b4c23eb",
       "sessionId": "36b7782f-62a4-42a7-bdf2-da7c55a7c436",
       "eventType": "page_view",
-      "page": "/",
+      "page": "/catalogo",
       "action": "page_view",
-      "label": "/",
+      "label": "/catalogo",
       "metadata": {},
-      "createdAt": "2026-05-28T20:40:50.308Z"
-    },
-    {
-      "id": "4f765fbd-b06d-49aa-9d57-e103f9488e55",
-      "sessionId": "36b7782f-62a4-42a7-bdf2-da7c55a7c436",
-      "eventType": "page_view",
-      "page": "/",
-      "action": "page_view",
-      "label": "/",
-      "metadata": {},
-      "createdAt": "2026-05-28T20:39:43.009Z"
-    },
-    {
-      "id": "e35da225-feab-48ec-af9d-3e18b8befb41",
-      "sessionId": "36b7782f-62a4-42a7-bdf2-da7c55a7c436",
-      "eventType": "page_view",
-      "page": "/",
-      "action": "page_view",
-      "label": "/",
-      "metadata": {},
-      "createdAt": "2026-05-28T20:36:56.343Z"
+      "createdAt": "2026-05-28T21:00:32.292Z"
     }
   ]
 }

@@ -102,9 +102,7 @@ export default function GoldNoirLanding() {
               <h2 className="mt-3 font-[family-name:var(--font-display)] text-4xl font-light tracking-wide sm:text-5xl">
                 Encuentra tu perfume <span className="italic text-[var(--gold)]">ideal</span>
               </h2>
-              <p className="mt-4 text-sm leading-7 text-stone-400 sm:text-base">
-                Recomendaciones automáticas básicas, sin IA todavía. Solo lógica clara y resultados útiles.
-              </p>
+    
             </div>
             <QuizSection perfumes={perfumes} />
             </div>

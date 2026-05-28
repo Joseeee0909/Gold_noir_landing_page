@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Menu, ShoppingBag, Sparkles, Phone } from "lucide-react";
 import { trackClientEvent } from "../../lib/track";
+import { BrandMark } from "./BrandMark";
 
 const publicLinks = [
   { href: "/", label: "Inicio", icon: Home },
@@ -33,12 +34,13 @@ export function AppShell({ children }) {
 
   return (
     <div className="min-h-screen bg-black text-stone-100">
-      <aside className="group fixed left-4 top-4 z-50 hidden h-[calc(100vh-2rem)] w-20 flex-col overflow-hidden rounded-[1.75rem] border border-white/5 bg-black/55 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-md transition-all duration-300 hover:w-72 hover:bg-black/70 focus-within:w-72 lg:flex">
-        <div className="rounded-[1.35rem] border border-white/5 bg-white/[0.03] p-3 transition group-hover:border-[var(--gold)]/15">
-          <p className="text-[9px] uppercase tracking-[0.4em] text-stone-500">GoldNoir</p>
-          <p className="mt-2 font-[family-name:var(--font-display)] text-2xl font-light leading-none text-stone-100 opacity-90 transition group-hover:text-white">
-            G<em className="italic text-[var(--gold)]">N</em>
-          </p>
+      <aside className="group fixed left-4 top-4 z-50 hidden h-[calc(100vh-2rem)] w-24 flex-col overflow-hidden rounded-[1.75rem] border border-white/5 bg-black/55 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-md transition-all duration-300 hover:w-80 hover:bg-black/70 focus-within:w-80 lg:flex">
+        <div className="flex items-center gap-3 rounded-[1.35rem] border border-white/5 bg-white/[0.03] p-2.5 transition group-hover:border-[var(--gold)]/15">
+          <BrandMark className="h-14 w-14 shrink-0" />
+          <div className="min-w-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <p className="text-[9px] uppercase tracking-[0.4em] text-stone-500">GoldNoir</p>
+            <p className="mt-1 text-xs uppercase tracking-[0.3em] text-stone-300">Signature house</p>
+          </div>
         </div>
 
         <nav className="mt-4 space-y-2">
@@ -57,10 +59,12 @@ export function AppShell({ children }) {
                     page: pathname,
                   })
                 }
-                className={`flex items-center gap-3 rounded-2xl border px-3 py-3 transition-all duration-200 ${active ? "border-white/10 bg-white/[0.06] text-[var(--gold)]" : "border-white/[0.04] bg-white/[0.02] text-stone-400 hover:border-white/10 hover:bg-white/[0.04] hover:text-stone-200"}`}
+                className={`flex h-14 w-full items-center justify-center gap-0 rounded-2xl px-3 transition-all duration-200 group-hover:justify-start group-hover:gap-3 ${active ? "bg-white/[0.06] text-[var(--gold)]" : "bg-white/[0.02] text-stone-400 hover:bg-white/[0.04] hover:text-stone-200"}`}
               >
-                <Icon size={16} className={active ? "text-[var(--gold)]" : "text-stone-400"} />
-                <span className="whitespace-nowrap text-[10px] uppercase tracking-[0.28em] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <span className={`mx-auto grid h-10 w-10 flex-none place-items-center rounded-2xl transition group-hover:mx-0 ${active ? "bg-[var(--gold)]/12" : "bg-transparent"}`}>
+                  <Icon size={19} className={active ? "text-[var(--gold)]" : "text-stone-300"} />
+                </span>
+                <span className="max-w-0 overflow-hidden whitespace-nowrap text-[10px] uppercase tracking-[0.28em] opacity-0 transition-all duration-200 group-hover:max-w-[12rem] group-hover:opacity-100">
                   {item.label}
                 </span>
               </Link>
@@ -68,22 +72,20 @@ export function AppShell({ children }) {
           })}
         </nav>
 
-        <div className="mt-auto rounded-[1.35rem] border border-white/5 bg-white/[0.03] p-3 text-sm text-stone-500">
-          <p className="text-[9px] uppercase tracking-[0.35em] text-stone-500 opacity-0 transition group-hover:opacity-100">Atajos</p>
-          <p className="mt-2 text-xs leading-5 opacity-0 transition group-hover:opacity-100">
-            Pasa el mouse para expandir.
-          </p>
-        </div>
+        
       </aside>
 
       <header className="sticky top-0 z-40 border-b border-white/5 bg-black/85 px-4 py-3 backdrop-blur-xl lg:hidden">
         <div className="flex items-center justify-between">
-          <p className="font-[family-name:var(--font-display)] text-2xl tracking-[0.35em] text-[var(--gold)]">GoldNoir</p>
+          <div className="flex items-center gap-3">
+            <BrandMark className="h-12 w-12 shrink-0" />
+            <p className="font-[family-name:var(--font-display)] text-xl tracking-[0.28em] text-[var(--gold)]">GoldNoir</p>
+          </div>
           <Menu size={18} className="text-stone-300" />
         </div>
       </header>
 
-      <main className="pb-20 lg:pl-[6rem]">{children}</main>
+      <main className="pb-20 lg:pl-[7rem]">{children}</main>
 
       <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-white/8 bg-black/90 px-3 py-2 backdrop-blur-xl lg:hidden">
         <div className="grid grid-cols-4 gap-2">
@@ -114,3 +116,4 @@ export function AppShell({ children }) {
     </div>
   );
 }
+

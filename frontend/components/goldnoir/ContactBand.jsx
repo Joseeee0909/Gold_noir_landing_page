@@ -14,7 +14,7 @@ export function ContactBand() {
             Hablemos de <span className="italic text-[var(--gold)]">fragancias</span>
           </h2>
           <p className="mt-4 text-sm leading-7 text-stone-400 sm:text-base">
-            La conversión se empuja con CTAs claros: “Quiero este perfume”, “Hablar por WhatsApp” y acceso directo a Instagram.
+            Si tienes preguntas o quieres recomendaciones personalizadas, no dudes en contactarnos. Estamos aquí para ayudarte a encontrar tu aroma perfecto.
           </p>
         </div>
 
