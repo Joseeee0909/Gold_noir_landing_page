@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  perfumes  Perfume[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Perfume {
+  id           String         @id @default(cuid())
+  name         String
+  brand        String
+  price        Int
+  gender       String
+  occasion     String?
+  duration     String?
+  notes        String?
+  inspiration  String?
+  image        String?
+  categoryId   String?
+  category     Category?      @relation(fields: [categoryId], references: [id])
+  orders       Order[]
+  quizAnswers  QuizResponse[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([brand])
+  @@index([gender])
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  role      String    @default("customer")
+  orders    Order[]
+  contacts  Contact[]
+  quizResponses QuizResponse[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Order {
+  id          String    @id @default(cuid())
+  userId      String?
+  perfumeId   String?
+  name        String
+  phone       String
+  channel     String?
+  notes       String?
+  status      String    @default("new")
+  user        User?     @relation(fields: [userId], references: [id])
+  perfume     Perfume?  @relation(fields: [perfumeId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status])
+}
+
+model Contact {
+  id          String    @id @default(cuid())
+  userId      String?
+  name        String?
+  phone       String?
+  channel     String?
+  message     String
+  user        User?     @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model QuizResponse {
+  id          String    @id @default(cuid())
+  userId      String?
+  answers     Json
+  results     Json
+  user        User?     @relation(fields: [userId], references: [id])
+  perfumeId   String?
+  perfume     Perfume?  @relation(fields: [perfumeId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
