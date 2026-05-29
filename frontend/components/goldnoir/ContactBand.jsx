@@ -6,7 +6,7 @@ import { trackClientEvent } from "../../lib/track";
 
 export function ContactBand() {
   return (
-    <section className="border-y border-white/5 bg-[#0b0b0b] px-4 py-16 sm:px-6 lg:px-8">
+    <section id="contacto" className="border-y border-white/5 bg-[#0b0b0b] px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 rounded-[2rem] border border-white/10 bg-white/5 p-8 md:flex-row md:items-center">
         <div className="max-w-2xl">
           <p className="text-xs uppercase tracking-[0.45em] text-[var(--gold)]">WhatsApp e Instagram</p>
