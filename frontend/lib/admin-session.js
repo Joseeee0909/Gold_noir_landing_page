@@ -1,6 +1,5 @@
 const ADMIN_COOKIE_NAME = "gn_admin";
 const ADMIN_SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-const ADMIN_PASSWORD = process.env.GOLDNOIR_ADMIN_PASSWORD || "goldnoir2024";
 const ADMIN_SESSION_SECRET = process.env.GOLDNOIR_ADMIN_SECRET || "goldnoir-secret-key";
 
 function hex(bytes) {
@@ -26,10 +25,6 @@ export async function verifyAdminSessionToken(token) {
   if (!expiresAt || Number.isNaN(expiresAt) || expiresAt < Date.now()) return false;
   const expected = await sha256(`${expiresAt}:${ADMIN_SESSION_SECRET}`);
   return signature === expected;
-}
-
-export function isValidAdminPassword(password) {
-  return password === ADMIN_PASSWORD;
 }
 
 export function getAdminCookieName() {

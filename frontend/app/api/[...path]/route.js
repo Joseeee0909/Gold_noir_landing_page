@@ -4,8 +4,9 @@ export const runtime = "nodejs";
 
 const HOP_BY_HOP_HEADERS = new Set(["connection", "content-length", "keep-alive", "transfer-encoding", "upgrade"]);
 
-async function proxy(request, params) {
+async function proxy(request, paramsPromise) {
   const backendUrl = process.env.BACKEND_URL || "http://localhost:4000";
+  const params = await paramsPromise;
   const path = Array.isArray(params?.path) ? params.path.join("/") : "";
   const targetUrl = `${backendUrl}/${path}${request.nextUrl.search}`;
   const method = request.method.toUpperCase();
@@ -23,9 +24,19 @@ async function proxy(request, params) {
 
   const response = new NextResponse(backendResponse.body, { status: backendResponse.status });
   backendResponse.headers.forEach((value, key) => {
-    if (HOP_BY_HOP_HEADERS.has(key.toLowerCase())) return;
+    if (HOP_BY_HOP_HEADERS.has(key.toLowerCase()) || key.toLowerCase() === "set-cookie") return;
     response.headers.set(key, value);
   });
+
+  const setCookieHeaders = typeof backendResponse.headers.getSetCookie === "function"
+    ? backendResponse.headers.getSetCookie()
+    : backendResponse.headers.get("set-cookie")
+      ? [backendResponse.headers.get("set-cookie")]
+      : [];
+
+  for (const cookieHeader of setCookieHeaders) {
+    response.headers.append("set-cookie", cookieHeader);
+  }
 
   return response;
 }

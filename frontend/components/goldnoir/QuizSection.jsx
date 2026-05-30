@@ -25,6 +25,18 @@ export function QuizSection({ perfumes }) {
 
   const favoriteText = answers.favorites ?? "";
 
+  if (!perfumes.length) {
+    return (
+      <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/10 bg-[var(--panel)]/90 p-6 text-center shadow-[0_20px_70px_rgba(0,0,0,0.4)] sm:p-8">
+        <p className="text-xs uppercase tracking-[0.45em] text-[var(--gold)]">Quiz inteligente</p>
+        <h3 className="mt-3 font-[family-name:var(--font-display)] text-4xl font-light text-white sm:text-5xl">Sin catálogo disponible</h3>
+        <p className="mt-4 text-sm leading-7 text-stone-400">
+          No hay perfumes cargados ahora mismo, así que no se pueden generar recomendaciones.
+        </p>
+      </div>
+    );
+  }
+
   const finish = async () => {
     setLoading(true);
     const fallback = recommendPerfumes(perfumes, answers);

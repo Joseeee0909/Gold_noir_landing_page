@@ -3,7 +3,18 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminAuth {
+  id           String   @id
+  passwordHash String   @map("password_hash")
+  ccHash       String   @map("cc_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_auth")
 }
 
 model Category {

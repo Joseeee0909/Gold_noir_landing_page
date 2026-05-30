@@ -1,14 +1,35 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BadgeCheck, MessageCircle, Sparkles } from "lucide-react";
-import { initialPerfumes } from "../../../lib/goldnoir-data";
 import { whatsappLink } from "../../../lib/links";
 import { OrderForm } from "../../../components/goldnoir/OrderForm";
 
 export const dynamic = "force-dynamic";
 
-export default function PerfumePage({ params }) {
-  const perfume = initialPerfumes.find((item) => item.id === params.id);
+async function loadPerfume(id) {
+  const backendUrl = process.env.BACKEND_URL;
+
+  if (backendUrl) {
+    try {
+      const response = await fetch(`${backendUrl}/dashboard`, { cache: "no-store" });
+      if (response.ok) {
+        const data = await response.json();
+        const fromDatabase = Array.isArray(data.products)
+          ? data.products.find((item) => item.id === id)
+          : null;
+
+        if (fromDatabase) return fromDatabase;
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+}
+
+export default async function PerfumePage({ params }) {
+  const perfume = await loadPerfume(params.id);
 
   if (!perfume) notFound();
 

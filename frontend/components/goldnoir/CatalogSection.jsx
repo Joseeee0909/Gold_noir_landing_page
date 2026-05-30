@@ -56,10 +56,17 @@ export function CatalogSection({ perfumes }) {
                 key={perfume.id}
                 className="group overflow-hidden rounded-[2rem] border border-white/10 bg-[var(--panel)]/90 shadow-[0_20px_70px_rgba(0,0,0,0.4)] transition duration-300 hover:-translate-y-1 hover:border-[var(--gold)]/30"
               >
-                <button
-                  type="button"
-                  className="block w-full text-left"
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="block w-full cursor-pointer text-left outline-none"
                   onClick={() => {
+                    trackClientEvent({ eventType: "click", action: "catalog_open_modal", label: perfume.id });
+                    setSelected(perfume);
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key !== "Enter" && event.key !== " ") return;
+                    event.preventDefault();
                     trackClientEvent({ eventType: "click", action: "catalog_open_modal", label: perfume.id });
                     setSelected(perfume);
                   }}
@@ -120,7 +127,7 @@ export function CatalogSection({ perfumes }) {
                       </button>
                     </div>
                   </div>
-                </button>
+                </div>
               </article>
             ))
           )}

@@ -26,6 +26,8 @@ const {
   createAdminSessionToken,
   getAdminCookieName,
   isValidAdminPassword,
+  verifyAdminRecoveryCode,
+  updateAdminPassword,
   verifyAdminSessionToken,
 } = require("./auth");
 
@@ -190,9 +192,21 @@ app.post("/track", asyncHandler(async (request, response) => {
 
 app.post("/admin/login", asyncHandler(async (request, response) => {
   const password = String(request.body?.password || "");
-  if (!isValidAdminPassword(password)) return jsonError(response, 401, "Contraseña incorrecta");
+  if (!(await isValidAdminPassword(password))) return jsonError(response, 401, "Contraseña incorrecta");
   const token = await createAdminSessionToken();
   response.setHeader("Set-Cookie", buildSessionCookie(token));
+  response.json({ ok: true });
+}));
+
+app.post("/admin/recover", asyncHandler(async (request, response) => {
+  const cc = String(request.body?.cc || "").trim();
+  const newPassword = String(request.body?.newPassword || "");
+
+  if (!cc) return jsonError(response, 400, "cc es requerido");
+  if (newPassword.length < 8) return jsonError(response, 400, "La nueva contraseña debe tener al menos 8 caracteres");
+  if (!(await verifyAdminRecoveryCode(cc))) return jsonError(response, 401, "La cédula no coincide");
+
+  await updateAdminPassword(newPassword);
   response.json({ ok: true });
 }));
 

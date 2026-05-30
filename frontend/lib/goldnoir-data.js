@@ -1,41 +1,4 @@
-export const initialPerfumes = [
-  {
-    id: "goldnoir-212-vip-rose",
-    name: "212 VIP Rosé",
-    brand: "Carolina Herrera",
-    price: 389000,
-    gender: "Femenino",
-    occasion: "Noche & eventos",
-    duration: "6-8 horas",
-    notes: "Champagne, florales, madera suave",
-    inspiration: "Una fragancia vibrante para destacar con elegancia.",
-    image: "",
-  },
-  {
-    id: "goldnoir-voyage",
-    name: "Voyage",
-    brand: "Nautica",
-    price: 289000,
-    gender: "Masculino",
-    occasion: "Uso diario",
-    duration: "4-6 horas",
-    notes: "Manzana verde, notas acuáticas, almizcle",
-    inspiration: "Fresco, limpio y versátil para todos los días.",
-    image: "",
-  },
-  {
-    id: "goldnoir-black-opium",
-    name: "Black Opium",
-    brand: "YSL",
-    price: 499000,
-    gender: "Femenino",
-    occasion: "Noche",
-    duration: "8+ horas",
-    notes: "Café, vainilla, flores blancas",
-    inspiration: "Un perfil intenso y seductor para noches especiales.",
-    image: "",
-  },
-];
+export const initialPerfumes = [];
 
 export const quizQuestions = [
   {

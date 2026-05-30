@@ -1,5 +1,3 @@
-const fs = require("fs/promises");
-const path = require("path");
 const { randomUUID } = require("crypto");
 
 let Pool;
@@ -9,8 +7,6 @@ try {
   Pool = null;
 }
 
-const dataDir = path.join(process.cwd(), ".data");
-const dataFile = path.join(dataDir, "goldnoir-store.json");
 const hasDatabaseUrl = Boolean(process.env.DATABASE_URL);
 const postgresEnabled = hasDatabaseUrl && Boolean(Pool);
 const shouldUseSsl = ["true", "1", "yes"].includes(String(process.env.POSTGRES_SSL || "").toLowerCase());
@@ -80,6 +76,33 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function perfumeSignature(perfume = {}) {
+  return [
+    String(perfume.name || "").trim().toLowerCase(),
+    String(perfume.brand || "").trim().toLowerCase(),
+    String(perfume.gender || "").trim().toLowerCase(),
+    String(perfume.occasion || "").trim().toLowerCase(),
+    String(perfume.duration || "").trim().toLowerCase(),
+    String(perfume.notes || "").trim().toLowerCase(),
+    String(perfume.inspiration || "").trim().toLowerCase(),
+    String(perfume.price ?? "").trim().toLowerCase(),
+  ].join("|");
+}
+
+function dedupePerfumes(perfumes = []) {
+  const seen = new Set();
+  const unique = [];
+
+  for (const perfume of perfumes) {
+    const signature = perfumeSignature(perfume);
+    if (seen.has(signature)) continue;
+    seen.add(signature);
+    unique.push(perfume);
+  }
+
+  return unique;
+}
+
 function normalizeStore(store) {
   return {
     ...defaultStore,
@@ -94,19 +117,13 @@ function normalizeStore(store) {
 }
 
 async function ensureStore() {
-  try {
-    const raw = await fs.readFile(dataFile, "utf8");
-    return normalizeStore(JSON.parse(raw));
-  } catch {
-    await fs.mkdir(dataDir, { recursive: true });
-    await fs.writeFile(dataFile, JSON.stringify(defaultStore, null, 2), "utf8");
-    return clone(defaultStore);
-  }
+  throw new Error("DATABASE_URL is required. Local JSON storage is disabled.");
 }
 
 async function saveStore(store) {
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(dataFile, JSON.stringify(store, null, 2), "utf8");
+  if (!store) {
+    throw new Error("DATABASE_URL is required. Local JSON storage is disabled.");
+  }
   return clone(store);
 }
 
@@ -360,8 +377,8 @@ async function dbReady() {
     await initPostgres();
     return true;
   } catch (error) {
-    console.error("[goldnoir-store] PostgreSQL unavailable, using local store:", error.message);
-    return false;
+    console.error("[goldnoir-store] PostgreSQL unavailable:", error.message);
+    throw error;
   }
 }
 
@@ -376,7 +393,7 @@ async function listProducts() {
 }
 
 async function replaceProducts(products) {
-  const normalized = products.map((product) => ({
+  const normalized = dedupePerfumes(products).map((product) => ({
     id: product.id || randomUUID(),
     name: product.name,
     brand: product.brand || "GoldNoir",
@@ -447,6 +464,41 @@ async function addProduct(product) {
   };
 
   if (await dbReady()) {
+    const existing = await getPool().query(
+      `SELECT id FROM products WHERE lower(name) = lower($1) AND lower(brand) = lower($2) AND lower(gender) = lower($3) LIMIT 1;`,
+      [created.name, created.brand, created.gender],
+    );
+
+    if (existing.rows.length > 0) {
+      await getPool().query(
+        `
+        UPDATE products
+        SET price = $2,
+            occasion = $3,
+            duration = $4,
+            notes = $5,
+            inspiration = $6,
+            image = $7,
+            category = $8,
+            updated_at = NOW()
+        WHERE id = $1
+        `,
+        [
+          existing.rows[0].id,
+          Number(created.price) || 0,
+          created.occasion,
+          created.duration,
+          created.notes,
+          created.inspiration,
+          created.image,
+          created.category,
+        ],
+      );
+
+      const updated = await getPool().query("SELECT * FROM products WHERE id = $1 LIMIT 1;", [existing.rows[0].id]);
+      return mapProductRow(updated.rows[0]);
+    }
+
     await getPool().query(
       `
       INSERT INTO products (
@@ -474,6 +526,16 @@ async function addProduct(product) {
   }
 
   const store = await ensureStore();
+  const existingIndex = store.products.findIndex((item) => perfumeSignature(item) === perfumeSignature(created));
+  if (existingIndex !== -1) {
+    store.products[existingIndex] = {
+      ...store.products[existingIndex],
+      ...created,
+    };
+    await saveStore(store);
+    return clone(store.products[existingIndex]);
+  }
+
   store.products.unshift(created);
   await saveStore(store);
   return clone(created);

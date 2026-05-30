@@ -5,13 +5,39 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, BarChart3, Bot, CalendarDays, Mail, MessageCircle, MousePointerClick, Package, ShoppingCart, Sparkles, Users } from "lucide-react";
 import { AdminSection } from "./AdminSection";
-import { initialPerfumes } from "../../lib/goldnoir-data";
 
 const EMPTY_ANALYTICS = { daily: [], topActions: [] };
 
+function perfumeSignature(perfume) {
+  return [
+    String(perfume?.name || "").trim().toLowerCase(),
+    String(perfume?.brand || "").trim().toLowerCase(),
+    String(perfume?.gender || "").trim().toLowerCase(),
+    String(perfume?.occasion || "").trim().toLowerCase(),
+    String(perfume?.duration || "").trim().toLowerCase(),
+    String(perfume?.notes || "").trim().toLowerCase(),
+    String(perfume?.inspiration || "").trim().toLowerCase(),
+    String(perfume?.price ?? "").trim().toLowerCase(),
+  ].join("|");
+}
+
+function dedupePerfumes(perfumes = []) {
+  const seen = new Set();
+  const unique = [];
+
+  for (const perfume of perfumes) {
+    const signature = perfumeSignature(perfume);
+    if (seen.has(signature)) continue;
+    seen.add(signature);
+    unique.push(perfume);
+  }
+
+  return unique;
+}
+
 export default function AdminPage() {
   const router = useRouter();
-  const [perfumes, setPerfumes] = useState(initialPerfumes);
+  const [perfumes, setPerfumes] = useState([]);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
   const [dashboard, setDashboard] = useState({
@@ -31,6 +57,7 @@ export default function AdminPage() {
         const response = await fetch("/api/dashboard", { cache: "no-store" });
         if (response.ok) {
           const data = await response.json();
+          const normalizedProducts = dedupePerfumes(data.products || []);
           setDashboard({
             source: data.source || "local-json",
             configured: Boolean(data.configured),
@@ -39,10 +66,19 @@ export default function AdminPage() {
             contacts: data.contacts || [],
             orders: data.orders || [],
             quizResponses: data.quizResponses || [],
-            products: data.products || [],
+            products: normalizedProducts,
           });
           if (Array.isArray(data.products) && data.products.length > 0) {
-            setPerfumes(data.products);
+            setPerfumes(normalizedProducts);
+            if (normalizedProducts.length !== data.products.length) {
+              void fetch("/api/products", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ products: normalizedProducts }),
+              });
+            }
+          } else {
+            setPerfumes([]);
           }
           if (data.stats?.catalog != null) {
             setToast(`Catalogo cargado · ${data.stats.catalog} perfumes`);
@@ -67,7 +103,7 @@ export default function AdminPage() {
       conversion: dashboard.stats?.conversion ?? "0%",
       clickRate: dashboard.stats?.clickRate ?? "0%",
       topGender: dashboard.stats?.topGender ?? "Femenino",
-      topOccasion: dashboard.stats?.topOccasion || perfumes[0]?.occasion || "Noche & eventos",
+      topOccasion: dashboard.stats?.topOccasion || (perfumes.length > 0 ? perfumes[0]?.occasion : "Sin catálogo"),
       categories: dashboard.stats?.categories ?? 0,
       orders: dashboard.stats?.orders ?? 0,
       contacts: dashboard.stats?.contacts ?? 0,
@@ -78,7 +114,7 @@ export default function AdminPage() {
 
   const syncPerfumes = (updater) => {
     setPerfumes((current) => {
-      const next = typeof updater === "function" ? updater(current) : updater;
+      const next = dedupePerfumes(typeof updater === "function" ? updater(current) : updater);
       void fetch("/api/products", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -96,7 +132,7 @@ export default function AdminPage() {
           contacts: data.contacts || state.contacts,
           orders: data.orders || state.orders,
           quizResponses: data.quizResponses || state.quizResponses,
-          products: data.products || state.products,
+          products: dedupePerfumes(data.products || state.products),
         }));
       });
       return next;

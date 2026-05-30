@@ -14,7 +14,7 @@ import { Reveal } from "./Reveal";
 import { trackClientEvent } from "../../lib/track";
 
 export default function GoldNoirLanding() {
-  const [perfumes, setPerfumes] = useState(initialPerfumes);
+  const [perfumes, setPerfumes] = useState([]);
   const [toast, setToast] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const toastTimer = useRef(null);
@@ -29,8 +29,8 @@ export default function GoldNoirLanding() {
       leads: 89,
       catalog: perfumes.length,
       conversion: "7.1%",
-      topGender: feminine >= masculine && feminine >= unisex ? "Femenino" : masculine >= unisex ? "Masculino" : "Unisex",
-      topOccasion: perfumes[0]?.occasion || "Noche & eventos",
+      topGender: perfumes.length === 0 ? "Sin catálogo" : feminine >= masculine && feminine >= unisex ? "Femenino" : masculine >= unisex ? "Masculino" : "Unisex",
+      topOccasion: perfumes.length === 0 ? "Sin catálogo" : perfumes[0]?.occasion || "Sin datos",
     };
   }, [perfumes]);
 
@@ -51,7 +51,7 @@ export default function GoldNoirLanding() {
           setPerfumes(data.products);
         }
       } catch {
-        setPerfumes(initialPerfumes);
+        setPerfumes([]);
       }
     };
 
